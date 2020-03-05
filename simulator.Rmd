@@ -1,0 +1,99 @@
+---
+title: "Population Evolution Simulator"
+author: "Paul Sabharwal"
+runtime: shiny
+output: html_document
+---
+
+```{r, include = F}
+library(tidyverse)
+library(shiny)
+```
+
+
+# Single population selection and mutation simulation.
+
+```{r shiny-input,echo=F}
+fluidRow(
+  column(6,
+         numericInput("gens","number of generations",100)),
+  column(6,
+         numericInput("fitAA","fitness of AA",1))
+)
+fluidRow(
+  column(6,
+         numericInput("muts","Mutation rate (symmetric)",0)),
+  column(6,
+         numericInput("fitAa","fitness of Aa",1))
+)
+fluidRow(
+  column(6,
+         sliderInput("pA0", label = "p(A):",
+              min = 0, max = 1, value = 0.5, step = 0.001)),
+  column(6,
+         numericInput("fitaa","fitness of aa",1))
+)
+```
+
+```{r function,echo=F}
+next_gen <- function(gen_table,fAA,fAa,faa,mut){
+  
+  num <- nrow(gen_table)
+  
+  last <- gen_table %>% slice(num)
+  
+  old_AA <- last %>% pull(AA)
+  old_Aa <- last %>% pull(Aa)
+  old_aa <- last %>% pull(aa)
+  
+  new_AA <- old_AA * fAA
+  new_Aa <- old_Aa * fAa
+  new_aa <- old_aa * faa
+  total <- new_AA + new_Aa + new_aa
+  new_AA <- new_AA / total
+  new_Aa <- new_Aa / total
+  new_aa <- new_aa / total
+  
+  new_pA <- (2*new_AA + new_Aa) / 2
+  dA_mut <- (1-new_pA)*mut - new_pA*mut
+  new_pA <- new_pA + dA_mut
+  
+  new_AA <- new_pA^2
+  new_Aa <- 2*new_pA*(1-new_pA)
+  new_aa <- (1-new_pA)^2
+  
+  old_gen <- last %>% pull(Gen)
+  new_table <- gen_table %>%
+    add_row(Gen = old_gen+1, AA = new_AA, Aa = new_Aa, aa = new_aa,pA = new_pA)
+  return(new_table)
+}
+```
+
+
+```{r test,echo=F}
+renderPlot({
+  init_A <- input$pA0
+  init_AA <- init_A^2
+  init_Aa <- 2*init_A*(1-init_A)
+  init_aa <- (1-init_A)^2
+
+  fit_AA <- input$fitAA
+  fit_Aa <- input$fitAa
+  fit_aa <- input$fitaa
+  
+  mut_rate <- input$muts
+  num_gens <- input$gens
+  
+  gen_table <- tibble("Gen"=1,"AA"=init_AA,"Aa"=init_Aa,"aa"=init_aa,"pA"=init_A)
+  
+  for(i in 1:num_gens){
+    gen_table <- next_gen(gen_table,fit_AA,fit_Aa,fit_aa,mut_rate)
+  }
+  
+  ggplot(gen_table,aes(Gen,pA)) +
+    geom_line()+
+    ylim(0,1)
+})
+```
+
+
