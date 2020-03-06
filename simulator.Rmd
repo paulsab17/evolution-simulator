@@ -16,22 +16,22 @@ library(shiny)
 ```{r shiny-input,echo=F}
 fluidRow(
   column(6,
-         numericInput("gens","number of generations",100)),
+         numericInput("gens","number of generations",100,width = "auto")),
   column(6,
-         numericInput("fitAA","fitness of AA",1))
+         numericInput("fitAA","fitness of AA",1,width = "auto"))
 )
 fluidRow(
   column(6,
-         numericInput("muts","Mutation rate (symmetric)",0)),
+         numericInput("muts","Mutation rate (symmetric)",0,width = "auto")),
   column(6,
-         numericInput("fitAa","fitness of Aa",1))
+         numericInput("fitAa","fitness of Aa",1,width = "auto"))
 )
 fluidRow(
   column(6,
          sliderInput("pA0", label = "p(A):",
-              min = 0, max = 1, value = 0.5, step = 0.001)),
+              min = 0, max = 1, value = 0.5, step = 0.001,width = "auto")),
   column(6,
-         numericInput("fitaa","fitness of aa",1))
+         numericInput("fitaa","fitness of aa",1,width = "auto"))
 )
 ```
 
@@ -96,4 +96,38 @@ renderPlot({
 })
 ```
 
+## Two populations with migration and selection
+
+```{r shiny-input-2,echo=F}
+fluidRow(
+  column(6,
+         sliderInput("pA0_1", label = "p(A) in Pop 1:",
+              min = 0, max = 1, value = 0.5, step = 0.001,width = "auto")),
+  column(6,
+         sliderInput("pA0_2", label = "p(A) in Pop 2:",
+              min = 0, max = 1, value = 0.5, step = 0.001,width = "auto"))
+)
+fluidRow(
+  column(6,
+         numericInput("gens","number of generations",100,width = "auto")),
+  column(6,
+         numericInput("migrate","migration rate:",0.01,width = "auto"))
+)
+fluidRow(
+  column(4,
+         numericInput("fitAA_1","fitness of AA in Pop 1",1)),
+  column(4,
+         numericInput("fitAa_1","fitness of Aa in Pop 1",1)),
+  column(4,
+         numericInput("fitaa_1","fitness of aa in Pop 1",1))
+)
+fluidRow(
+  column(4,
+         numericInput("fitAA_2","fitness of AA in Pop 2",1)),
+  column(4,
+         numericInput("fitAa_2","fitness of Aa in Pop 2",1)),
+  column(4,
+         numericInput("fitaa_2","fitness of aa in Pop 2",1))
+)
+```
 
