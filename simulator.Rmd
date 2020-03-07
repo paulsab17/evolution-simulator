@@ -35,7 +35,7 @@ fluidRow(
 )
 ```
 
-```{r function,echo=F}
+```{r calc-1,echo=F}
 next_gen <- function(gen_table,fAA,fAa,faa,mut){
   
   num <- nrow(gen_table)
@@ -70,7 +70,7 @@ next_gen <- function(gen_table,fAA,fAa,faa,mut){
 ```
 
 
-```{r test,echo=F}
+```{r shiny-render-1,echo=F}
 renderPlot({
   init_A <- input$pA0
   init_AA <- init_A^2
@@ -109,7 +109,7 @@ fluidRow(
 )
 fluidRow(
   column(6,
-         numericInput("gens","number of generations",100,width = "auto")),
+         numericInput("gens_2","number of generations",100,width = "auto")),
   column(6,
          numericInput("migrate","migration rate:",0.01,width = "auto"))
 )
@@ -131,3 +131,116 @@ fluidRow(
 )
 ```
 
+```{r calc-2,echo=F}
+next_gen_2 <- function(gen_table,fAA_1,fAa_1,faa_1,fAA_2,fAa_2,faa_2,migrate){
+  
+  num <- nrow(gen_table)
+  last_1 <- gen_table %>% slice(num-1)
+  last_2 <- gen_table %>% slice(num)
+  
+  # calc pop 1
+  old_AA_1 <- last_1 %>% pull(AA)
+  old_Aa_1 <- last_1 %>% pull(Aa)
+  old_aa_1 <- last_1 %>% pull(aa)
+  
+  new_AA_1 <- old_AA_1 * fAA_1
+  new_Aa_1 <- old_Aa_1 * fAa_1
+  new_aa_1 <- old_aa_1 * faa_1
+  total_1 <- new_AA_1 + new_Aa_1 + new_aa_1
+  new_AA_1 <- new_AA_1 / total_1
+  new_Aa_1 <- new_Aa_1 / total_1
+  new_aa_1 <- new_aa_1 / total_1
+  
+  new_pA_1 <- (2*new_AA_1 + new_Aa_1) / 2
+  
+  new_AA_1 <- new_pA_1^2
+  new_Aa_1 <- 2*new_pA_1*(1-new_pA_1)
+  new_aa_1 <- (1-new_pA_1)^2
+  
+  # calc pop 2
+  old_AA_2 <- last_2 %>% pull(AA)
+  old_Aa_2 <- last_2 %>% pull(Aa)
+  old_aa_2 <- last_2 %>% pull(aa)
+  
+  new_AA_2 <- old_AA_2 * fAA_2
+  new_Aa_2 <- old_Aa_2 * fAa_2
+  new_aa_2 <- old_aa_2 * faa_2
+  total_2 <- new_AA_2 + new_Aa_2 + new_aa_2
+  new_AA_2 <- new_AA_2 / total_2
+  new_Aa_2 <- new_Aa_2 / total_2
+  new_aa_2 <- new_aa_2 / total_2
+  
+  new_pA_2 <- (2*new_AA_2 + new_Aa_2) / 2
+  
+  new_AA_2 <- new_pA_2^2
+  new_Aa_2 <- 2*new_pA_2*(1-new_pA_2)
+  new_aa_2 <- (1-new_pA_2)^2
+  
+  # do migration
+  temp_AA_1 <- new_AA_1
+  temp_Aa_1 <- new_Aa_1
+  temp_aa_1 <- new_aa_1
+  
+  new_AA_1 <- new_AA_1 + migrate*new_AA_2 - migrate*new_AA_1
+  new_Aa_1 <- new_Aa_1 + migrate*new_Aa_2 - migrate*new_Aa_1
+  new_aa_1 <- new_aa_1 + migrate*new_aa_2 - migrate*new_aa_1
+  
+  new_AA_2 <- new_AA_2 + migrate*temp_AA_1 - migrate*new_AA_2
+  new_Aa_2 <- new_Aa_2 + migrate*temp_Aa_1 - migrate*new_Aa_2
+  new_aa_2 <- new_aa_2 + migrate*temp_aa_1 - migrate*new_aa_2
+  
+  
+  old_gen <- last_1 %>% pull(Gen)
+  new_table <- gen_table %>%
+    add_row(Gen=old_gen+1,AA=new_AA_1,Aa=new_Aa_1,aa=new_aa_1,pA=new_pA_1,pop=1) %>%
+    add_row(Gen=old_gen+1,AA=new_AA_2,Aa=new_Aa_2,aa=new_aa_2,pA=new_pA_2,pop=2)
+    
+  return(new_table)
+}
+```
+
+
+```{r shiny-render-2,echo=F}
+renderPlot({
+  init_A_1 <- input$pA0_1
+  init_AA_1 <- init_A_1^2
+  init_Aa_1 <- 2*init_A_1*(1-init_A_1)
+  init_aa_1 <- (1-init_A_1)^2
+
+  fit_AA_1 <- input$fitAA_1
+  fit_Aa_1 <- input$fitAa_1
+  fit_aa_1 <- input$fitaa_1
+  
+  init_A_2 <- input$pA0_2
+  init_AA_2 <- init_A_2^2
+  init_Aa_2 <- 2*init_A_2*(1-init_A_2)
+  init_aa_2 <- (1-init_A_2)^2
+
+  fit_AA_2 <- input$fitAA_2
+  fit_Aa_2 <- input$fitAa_2
+  fit_aa_2 <- input$fitaa_2
+  
+  num_gens_2 <- input$gens_2
+  mig_rate <- input$migrate
+  
+  gen_table_2 <- tibble("Gen"=c(1,1),
+                      "AA"=c(init_AA_1,init_AA_2),
+                      "Aa"=c(init_Aa_1,init_Aa_2),
+                      "aa"=c(init_aa_1,init_aa_2),
+                      "pA"=c(init_A_1,init_A_2),
+                      "pop"=c(1,2))
+  
+  for(i in 1:num_gens_2){
+    gen_table_2 <- next_gen_2(gen_table_2,fit_AA_1,fit_Aa_1,fit_aa_1,
+                              fit_AA_2,fit_Aa_2,fit_aa_2,mig_rate)
+  }
+  
+  print(mig_rate)
+  print(gen_table_2)
+  
+  ggplot(gen_table_2,aes(Gen,pA)) +
+    geom_line() + 
+    facet_wrap(~ pop) +
+    ylim(0,1)
+})
+```
