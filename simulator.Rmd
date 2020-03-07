@@ -92,7 +92,9 @@ renderPlot({
   
   ggplot(gen_table,aes(Gen,pA)) +
     geom_line()+
-    ylim(0,1)
+    ylim(0,1) + 
+    labs(y = "p(A)",x="Generation") +
+    theme_gray(base_size = 16)
 })
 ```
 
@@ -102,10 +104,10 @@ renderPlot({
 fluidRow(
   column(6,
          sliderInput("pA0_1", label = "p(A) in Pop 1:",
-              min = 0, max = 1, value = 0.5, step = 0.001,width = "auto")),
+              min = 0, max = 1, value = 0.6, step = 0.001,width = "auto")),
   column(6,
          sliderInput("pA0_2", label = "p(A) in Pop 2:",
-              min = 0, max = 1, value = 0.5, step = 0.001,width = "auto"))
+              min = 0, max = 1, value = 0.4, step = 0.001,width = "auto"))
 )
 fluidRow(
   column(6,
@@ -235,12 +237,11 @@ renderPlot({
                               fit_AA_2,fit_Aa_2,fit_aa_2,mig_rate)
   }
   
-  print(mig_rate)
-  print(gen_table_2)
-  
-  ggplot(gen_table_2,aes(Gen,pA)) +
+  ggplot(gen_table_2,aes(x = Gen,y = pA,color = factor(pop),group = factor(pop))) +
     geom_line() + 
-    facet_wrap(~ pop) +
-    ylim(0,1)
+    ylim(0,1) +
+    labs(y = "p(A)",x="Generation") +
+    scale_color_discrete(name = "Population") +
+    theme_gray(base_size = 16)
 })
 ```
