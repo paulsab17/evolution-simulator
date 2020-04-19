@@ -8,10 +8,12 @@ output: html_document
 ```{r, include = F}
 library(tidyverse)
 library(shiny)
+library(gifski)
+library(gganimate)
 ```
 
 
-# Single population selection
+
 
 ```{r shiny-input,echo=F}
 fluidRow(
@@ -23,16 +25,16 @@ fluidRow(
 )
 fluidRow(
   column(4,
-         numericInput("fitAA","fitness of AA",1,width = "auto")),
+         numericInput("fitAA","fitness of AA (full armor)",1,width = "auto")),
   column(4,
-         numericInput("fitAa","fitness of Aa",1,width = "auto")),
+         numericInput("fitAa","fitness of Aa (partial armor)",1,width = "auto")),
   column(4,
-         numericInput("fitaa","fitness of aa",1,width = "auto"))
+         numericInput("fitaa","fitness of aa (minimal armor)",1,width = "auto"))
 )
 ```
 
 ```{r calc-1,echo=F}
-next_gen <- function(gen_table,fAA,fAa,faa,mut){
+next_gen <- function(gen_table,fAA,fAa,faa){
   
   num <- nrow(gen_table)
   
@@ -65,7 +67,7 @@ next_gen <- function(gen_table,fAA,fAa,faa,mut){
 
 
 ```{r shiny-render-1,echo=F}
-renderPlot({
+renderImage({
   init_A <- input$pA0
   init_AA <- init_A^2
   init_Aa <- 2*init_A*(1-init_A)
@@ -75,21 +77,30 @@ renderPlot({
   fit_Aa <- input$fitAa
   fit_aa <- input$fitaa
   
-  mut_rate <- input$muts
   num_gens <- input$gens
   
-  gen_table <- tibble("Gen"=1,"AA"=init_AA,"Aa"=init_Aa,"aa"=init_aa,"pA"=init_A)
+  gen_table <- tibble("Gen"=0,"AA"=init_AA,"Aa"=init_Aa,"aa"=init_aa,"pA"=init_A)
   
   for(i in 1:num_gens){
-    gen_table <- next_gen(gen_table,fit_AA,fit_Aa,fit_aa,mut_rate)
+    gen_table <- next_gen(gen_table,fit_AA,fit_Aa,fit_aa)
   }
   
-  ggplot(gen_table,aes(Gen,pA)) +
-    geom_line()+
+  p <- ggplot(gen_table,aes(Gen,pA)) +
+    geom_line(color="red")+
     ylim(0,1) + 
-    labs(y = "p(A)",x="Generation") +
-    theme_gray(base_size = 16)
-})
+    labs(y = "proportion of A alleles",x="Generation",title="Change in proportion of A allele over time") +
+    theme_gray(base_size = 16) +
+    transition_reveal(Gen)
+  
+  outfile <- tempfile(fileext='.gif')
+  
+  anim_save("outfile.gif",animate(p,nframes=25,end_pause=10,width=900))
+
+    # Return a list containing the filename
+  list(src = "outfile.gif",contentType = 'image/gif')
+  
+},deleteFile = TRUE
+)
 ```
 
 
