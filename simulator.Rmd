@@ -1,5 +1,5 @@
 ---
-title: "Population Evolution Simulator"
+title: "Exploring Evolution at one Locus"
 author: "Paul Sabharwal"
 runtime: shiny
 output: html_document
@@ -18,18 +18,23 @@ library(gganimate)
 ```{r shiny-input,echo=F}
 fluidRow(
   column(6,
-         numericInput("gens","number of generations",100,width = "auto")),
+         sliderInput("gens",label = "number of generations",
+                     min = 50,max = 500,value = 150,step = 5,width = "auto")),
   column(6,
-         sliderInput("pA0", label = "p(A):",
+         sliderInput("pA0", label = "Starting proportion of Allele A:",
               min = 0, max = 1, value = 0.5, step = 0.001,width = "auto"))
 )
 fluidRow(
   column(4,
          numericInput("fitAA","fitness of AA (full armor)",1,width = "auto")),
   column(4,
-         numericInput("fitAa","fitness of Aa (partial armor)",1,width = "auto")),
+         numericInput("fitAa","fitness of Aa (partial armor)",0.99,width = "auto")),
   column(4,
-         numericInput("fitaa","fitness of aa (minimal armor)",1,width = "auto"))
+         numericInput("fitaa","fitness of aa (minimal armor)",0.9,width = "auto"))
+)
+fluidRow(
+  actionButton("calc", "Recalculate!",icon=icon("dna"),
+               style="color: #fff; background-color: #337ab7; border-color: #2e6da4")
 )
 ```
 
@@ -68,16 +73,20 @@ next_gen <- function(gen_table,fAA,fAa,faa){
 
 ```{r shiny-render-1,echo=F}
 renderImage({
-  init_A <- input$pA0
+  
+  #dependency on action button
+  input$calc
+  
+  init_A <- isolate(input$pA0)
   init_AA <- init_A^2
   init_Aa <- 2*init_A*(1-init_A)
   init_aa <- (1-init_A)^2
 
-  fit_AA <- input$fitAA
-  fit_Aa <- input$fitAa
-  fit_aa <- input$fitaa
+  fit_AA <- isolate(input$fitAA)
+  fit_Aa <- isolate(input$fitAa)
+  fit_aa <- isolate(input$fitaa)
   
-  num_gens <- input$gens
+  num_gens <- isolate(input$gens)
   
   gen_table <- tibble("Gen"=0,"AA"=init_AA,"Aa"=init_Aa,"aa"=init_aa,"pA"=init_A)
   
