@@ -67,7 +67,11 @@ locus and show how the proportion of alleles changes over time.
 
 ## Stickleback fish
 
-talk about stickleback fish and why locus interesting
+An interesting example of a single locus that can be easily seen is in the
+"armor" of the threespine stickleback fish. There are several populations of this
+fish, some of which have an "armor" made of bony plates along their back. This
+trait has been found to be mostly controlled by a single locus, with two
+different possible alleles.[^4] 
 
 
 ```{r shiny-input-1,echo=F}
@@ -227,3 +231,7 @@ Available from: https://www.ncbi.nlm.nih.gov/books/NBK22006/
 [^2]:Willis, J. (2020). Bio 202 Lecture 5: Variation and Inheritance at a
 Single Locus [PowerPoint slides]. 
 [^3]:Willis, J. (2020). Bio 202 Lecture 15: Natural Selection [PowerPoint slides]. 
+[^4]:Colosimo P.F., Peichel C.L., Nereng K., Blackman B.K., Shapiro M.D.,
+Schluter D., et al. (2004) 
+*The Genetic Architecture of Parallel Armor Plate Reduction in Threespine Sticklebacks*. 
+PLoS Biol 2(5): e109. https://doi.org/10.1371/journal.pbio.0020109
