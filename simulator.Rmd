@@ -67,18 +67,46 @@ locus and show how the proportion of alleles changes over time.
 
 ## Stickleback fish
 
-An interesting example of a single locus that can be easily seen is in the
+One interesting example of a single locus that can be easily seen is in the
 "armor" of the threespine stickleback fish. There are several populations of this
-fish, some of which have an "armor" made of bony plates along their back. This
+fish, some of which have an "armor" made of bony plates along their back, as 
+can be seen in the top photo. 
+
+![](sticklefish.png)
+
+This
 trait has been found to be mostly controlled by a single locus, with two
-different possible alleles.[^4] 
+different possible alleles.[^4] These alleles can be represented as A and a. 
+Individuals homozygous for the A allele (**AA**) have full platings. Individuals
+homozygous for the a allele (**aa**) have very little plating. Individuals that
+are heterozygous (**Aa**) mostly had partial plates.  
+  
+These "armor" platings are advantageous for stickleback fish because they give
+protection against predators. The bony armor offers both protection against 
+puncture as well as making the fish more difficult to swallow so that they
+can escape a predator's attack.[^5]  
+  
+Knowing this, we can simulate what the evolution of this trait might have been
+like. Among all the alleles in the population, some percentage will be **A** and
+the rest **a**. We will start with 30% **A**, but you can adjust the starting
+proportion with a slider. You can also adjust the number of generations simulated.
+Below, we have relative **fitness** values for each pair of alleles in this
+environment (**phenotype**). The most advantageous phenotype has a value of 1.
+The rest have fractional values that represent how effective they are
+at reproducing and passing on their genes. A individual with a relative fitness
+of 0.75 would be expected to produce 75% of the offspring of the "best" phenotype.
+We will start with full armor as the most advantageous, with partial and minimal
+armor less adaptive. By tracking the curve, you can see how the proportion of 
+**A** alleles in the population would be expected to change. You can change
+any of the parameters of the simulation and click **Recalculate!** to see what
+would happen (it may take a few seconds to update).
 
 
 ```{r shiny-input-1,echo=F}
 fluidRow(
   column(6,
          sliderInput("gens",label = "number of generations",
-                     min = 50,max = 500,value = 150,step = 5,width = "auto")),
+                     min = 50,max = 500,value = 200,step = 5,width = "auto")),
   column(6,
          sliderInput("pA0", label = "Starting proportion of Allele A:",
               min = 0, max = 1, value = 0.3, step = 0.001,width = "auto"))
@@ -88,7 +116,7 @@ fluidRow(
          numericInput("fitAA","fitness of AA (full armor)",value = 1,
                       min = 0,max = 1,step = 0.01,width = "auto")),
   column(4,
-         numericInput("fitAa","fitness of Aa (partial armor)",value =0.98,
+         numericInput("fitAa","fitness of Aa (partial armor)",value = 0.98,
                       min = 0,max = 1,step = 0.01,width = "auto")),
   column(4,
          numericInput("fitaa","fitness of aa (minimal armor)",value = 0.95,
@@ -235,3 +263,6 @@ Single Locus [PowerPoint slides].
 Schluter D., et al. (2004) 
 *The Genetic Architecture of Parallel Armor Plate Reduction in Threespine Sticklebacks*. 
 PLoS Biol 2(5): e109. https://doi.org/10.1371/journal.pbio.0020109
+[^5]:Reimchen, T. (2000). 
+*Predator Handling Failures of Lateral Plate Morphs in Gasterosteus aculeatus: Functional Implications for the Ancestral Plate Condition.* Behaviour, 137(7/8), 1081-1096. Retrieved April 20, 2020, from
+www.jstor.org/stable/4535758
