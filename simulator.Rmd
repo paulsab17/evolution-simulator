@@ -53,9 +53,10 @@ individual receiives two copies of each gene, one from each parent. The specific
 sequence that is received is called an **allele**. For most genes, there are multiple
 different possible alleles that an individual could receive, and which ones they
 have can determine many important characteristics. Each individual will
-have two alleles. 
+have two alleles, and individuals are referred to as **homozygous** if both
+are the same and **heterozygous** if they are different.
   
-When we talk about a locus, we are talking about how the proportions of 
+When we talk about evolution at a locus, we are talking about how the proportions of 
 different alleles that are possible at that locus change over time. If one pair of
 alleles is more advantageous for an organism than another, it will be selected
 for. This is referred to as **fitness** - how effective an individual with a 
@@ -76,10 +77,10 @@ can be seen in the top photo.
 
 This
 trait has been found to be mostly controlled by a single locus, with two
-different possible alleles.[^4] These alleles can be represented as A and a. 
-Individuals homozygous for the A allele (**AA**) have full platings. Individuals
-homozygous for the a allele (**aa**) have very little plating. Individuals that
-are heterozygous (**Aa**) mostly had partial plates.  
+different possible alleles.[^4] These can be represented as **A** and **a**. 
+Individuals homozygous for the **A** allele (**AA**) have full platings. Individuals
+homozygous for the **a** allele (**aa**) have very little plating. Individuals that
+are heterozygous (**Aa**) mostly have partial plates.  
   
 These "armor" platings are advantageous for stickleback fish because they give
 protection against predators. The bony armor offers both protection against 
@@ -175,9 +176,37 @@ renderImage({
 
 ## Malaria and Sickle-Cell Anemia
 
-describe it  
+In the case of stickleback armor plating, one allele is always selected for
+and will eventually become fixed in the population (as has been seen in
+marine populations). However, sometimes this is not the case and there will
+instead be an equilibrium proportion that is favored. This is referred to as
+**balancing selection**. A common case where this occurs is when the
+heterozygous phenotype **Aa** is actually the most advantageous.  
   
-link to balancing selection
+One important real-world example of this is in the human *beta-globin* gene, a 
+part of *hemoglobin* in Red Blood Cells. As before, there is one locus with
+two alleles, which we will refer to as **A** and **a**. The **A** allele encodes
+the normal, healthy type. The **a** allele encodes a mutant version that forms
+the characteristic "sickle cells" of the disease. These cells do not function
+as effectively as normal RBC's and can cause blockages.[^6] Individuals
+homzygous for the abnormal allele (**aa**) often suffer from sickle cell anemia,
+causing several serious symptoms without appropriate medical care. However,
+it turns out that heterozygotes (**Aa**) actually have a suprising advantage: they
+are more resistant to malaria, due to interactions with the malaria parasite
+which spends some time in the blood.[^7] This can be seen in the real world, as
+there are higher rates of the **a** allele in regions where malaria is prevalent.
+  
+This situation, where the heterozygote is the most advantageous, causes a balancing
+scenario where the proportion of the **A** allele is kept at an equilibrium level.
+This can be seen in the simulation below - try changing the starting frequency
+to any value using the slider. Natural selection will always bring it to the
+same equilibrium value. 
+  
+  
+NOTE: the default values for fitness below are meant to reflect a population without
+medical care or where it is insufficient to address the challenges posed by the
+relevant diseases, and does not represent today's reality for those affected by
+these diseases.
 
 ```{r shiny-input-2,echo=F}
 fluidRow(
@@ -250,6 +279,13 @@ renderImage({
 ```
 
 
+The simulations above are limited models that do not incoporate many aspects of
+natural selection that occur in real-world populations. A more complete simulation
+would address mutations, multiple populations and migration, non-random mating,
+and other factors. However, these simulations are a good starting point for
+understanding the process behind natural selection and evolution and are hopefully 
+informative and useful.
+
 ## References
 
 [^1]:Griffiths, A.J.F., Miller, J.H., Suzuki, D.T., et al. 
@@ -257,12 +293,18 @@ renderImage({
 New York: W. H. Freeman. Chapter 2, Patterns of Inheritance. 
 Available from: https://www.ncbi.nlm.nih.gov/books/NBK22006/
 [^2]:Willis, J. (2020). Bio 202 Lecture 5: Variation and Inheritance at a
-Single Locus [PowerPoint slides]. 
+Single Locus [PowerPoint slides]. Duke University.
 [^3]:Willis, J. (2020). Bio 202 Lecture 15: Natural Selection [PowerPoint slides]. 
+Duke University,
 [^4]:Colosimo P.F., Peichel C.L., Nereng K., Blackman B.K., Shapiro M.D.,
 Schluter D., et al. (2004) 
 *The Genetic Architecture of Parallel Armor Plate Reduction in Threespine Sticklebacks*. 
 PLoS Biol 2(5): e109. https://doi.org/10.1371/journal.pbio.0020109
 [^5]:Reimchen, T. (2000). 
-*Predator Handling Failures of Lateral Plate Morphs in Gasterosteus aculeatus: Functional Implications for the Ancestral Plate Condition.* Behaviour, 137(7/8), 1081-1096. Retrieved April 20, 2020, from
+*Predator Handling Failures of Lateral Plate Morphs in Gasterosteus aculeatus: Functional Implications for the Ancestral Plate Condition.* Behaviour, 137(7/8), 1081-1096. Retrieved from
 www.jstor.org/stable/4535758
+[^6]:Mayo Clinic. (2020, January 30). *Sickle cell anemia*. Retreived from
+https://www.mayoclinic.org/diseases-conditions/sickle-cell-anemia/symptoms-causes/syc-20355876
+[^7]: Taylor, J. (2017). Bio 498 Balancing Selection [PowerPoint slides]. Arizona 
+State University. Retrieved from 
+https://math.la.asu.edu/%7Ejtaylor/teaching/Spring2017/BIO545/lectures/balancing.pdf
