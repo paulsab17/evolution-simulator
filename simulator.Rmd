@@ -12,33 +12,7 @@ library(gifski)
 library(gganimate)
 ```
 
-
-
-
-```{r shiny-input,echo=F}
-fluidRow(
-  column(6,
-         sliderInput("gens",label = "number of generations",
-                     min = 50,max = 500,value = 150,step = 5,width = "auto")),
-  column(6,
-         sliderInput("pA0", label = "Starting proportion of Allele A:",
-              min = 0, max = 1, value = 0.5, step = 0.001,width = "auto"))
-)
-fluidRow(
-  column(4,
-         numericInput("fitAA","fitness of AA (full armor)",1,width = "auto")),
-  column(4,
-         numericInput("fitAa","fitness of Aa (partial armor)",0.99,width = "auto")),
-  column(4,
-         numericInput("fitaa","fitness of aa (minimal armor)",0.9,width = "auto"))
-)
-fluidRow(
-  actionButton("calc", "Recalculate!",icon=icon("dna"),
-               style="color: #fff; background-color: #337ab7; border-color: #2e6da4")
-)
-```
-
-```{r calc-1,echo=F}
+```{r calc,echo=F}
 next_gen <- function(gen_table,fAA,fAa,faa){
   
   num <- nrow(gen_table)
@@ -71,6 +45,58 @@ next_gen <- function(gen_table,fAA,fAa,faa){
 ```
 
 
+We often talk about evolution having to do with genes, but what exactly does
+that mean? A **gene** is the "fundamental unit of heredity", corresponding to a 
+specific segment of DNA and which carries information.[^1] The place on the 
+chromosome where this gene is located is usually called a **locus**.[^2] Every
+individual receiives two copies of each gene, one from each parent. The specific
+sequence that is received is called an **allele**. For most genes, there are multiple
+different possible alleles that an individual could receive, and which ones they
+have can determine many important characteristics. Each individual will
+have two alleles. 
+  
+When we talk about a locus, we are talking about how the proportions of 
+different alleles that are possible at that locus change over time. If one pair of
+alleles is more advantageous for an organism than another, it will be selected
+for. This is referred to as **fitness** - how effective an individual with a 
+certain pair of alleles is at surviving and reproducing.[^3]  
+  
+This explorable explanation will look at two examples of evolution at a single
+locus and show how the proportion of alleles changes over time.
+
+
+## Stickleback fish
+
+talk about stickleback fish and why locus interesting
+
+
+```{r shiny-input-1,echo=F}
+fluidRow(
+  column(6,
+         sliderInput("gens",label = "number of generations",
+                     min = 50,max = 500,value = 150,step = 5,width = "auto")),
+  column(6,
+         sliderInput("pA0", label = "Starting proportion of Allele A:",
+              min = 0, max = 1, value = 0.3, step = 0.001,width = "auto"))
+)
+fluidRow(
+  column(4,
+         numericInput("fitAA","fitness of AA (full armor)",value = 1,
+                      min = 0,max = 1,step = 0.01,width = "auto")),
+  column(4,
+         numericInput("fitAa","fitness of Aa (partial armor)",value =0.98,
+                      min = 0,max = 1,step = 0.01,width = "auto")),
+  column(4,
+         numericInput("fitaa","fitness of aa (minimal armor)",value = 0.95,
+                      min = 0,max = 1,step = 0.01,width = "auto")),
+)
+fluidRow(
+  actionButton("calc", "Recalculate!",icon = icon("dna"),
+               style="color: #fff; background-color: #337ab7; border-color: #2e6da4")
+)
+```
+
+
 ```{r shiny-render-1,echo=F}
 renderImage({
   
@@ -97,13 +123,14 @@ renderImage({
   p <- ggplot(gen_table,aes(Gen,pA)) +
     geom_line(color="red")+
     ylim(0,1) + 
-    labs(y = "proportion of A alleles",x="Generation",title="Change in proportion of A allele over time") +
+    labs(y = "proportion of A alleles",x="Generation",
+         title="Evolution at sticklefish \"armor\" locus") +
     theme_gray(base_size = 16) +
     transition_reveal(Gen)
   
   outfile <- tempfile(fileext='.gif')
   
-  anim_save("outfile.gif",animate(p,nframes=25,end_pause=10,width=900))
+  anim_save("outfile.gif",animate(p,nframes=25,end_pause=10,width=900,height=400))
 
     # Return a list containing the filename
   list(src = "outfile.gif",contentType = 'image/gif')
@@ -113,3 +140,90 @@ renderImage({
 ```
 
 
+
+## Malaria and Sickle-Cell Anemia
+
+describe it  
+  
+link to balancing selection
+
+```{r shiny-input-2,echo=F}
+fluidRow(
+  column(6,
+         sliderInput("gens2",label = "number of generations",
+                     min = 50,max = 500,value = 100,step = 5,width = "auto")),
+  column(6,
+         sliderInput("pA02", label = "Starting proportion of Allele A:",
+              min = 0, max = 1, value = 0.5, step = 0.001,width = "auto"))
+)
+fluidRow(
+  column(4,
+         numericInput("fitAA2","fitness of AA (both normal)",value = 0.95,
+                      min = 0,max = 1,step = 0.01,width = "auto")),
+  column(4,
+         numericInput("fitAa2","fitness of Aa (1 normal 1 sickle)",value = 1,
+                      min = 0,max = 1,step = 0.01,width = "auto")),
+  column(4,
+         numericInput("fitaa2","fitness of aa (both sickle)",value = 0.75,
+                      min = 0,max = 1,step = 0.01,width = "auto")),
+)
+fluidRow(
+  actionButton("calc2", "Recalculate!",icon = icon("dna"),
+               style="color: #fff; background-color: #337ab7; border-color: #2e6da4")
+)
+```
+
+
+```{r shiny-render-2,echo=F}
+renderImage({
+  
+  #dependency on action button
+  input$calc2
+  
+  init_A <- isolate(input$pA02)
+  init_AA <- init_A^2
+  init_Aa <- 2*init_A*(1-init_A)
+  init_aa <- (1-init_A)^2
+
+  fit_AA <- isolate(input$fitAA2)
+  fit_Aa <- isolate(input$fitAa2)
+  fit_aa <- isolate(input$fitaa2)
+  
+  num_gens <- isolate(input$gens2)
+  
+  gen_table2 <- tibble("Gen"=0,"AA"=init_AA,"Aa"=init_Aa,"aa"=init_aa,"pA"=init_A)
+  
+  for(i in 1:num_gens){
+    gen_table2 <- next_gen(gen_table2,fit_AA,fit_Aa,fit_aa)
+  }
+  
+  p2 <- ggplot(gen_table2,aes(Gen,pA)) +
+    geom_line(color="red")+
+    ylim(0,1) + 
+    labs(y = "proportion of A alleles",x="Generation",
+         title="Evolution at human sickle cell (beta-globin) locus") +
+    theme_gray(base_size = 16) +
+    transition_reveal(Gen)
+  
+  outfile2 <- tempfile(fileext='.gif')
+  
+  anim_save("outfile2.gif",
+            animate(p2,nframes=25,end_pause=10,width=900,height=400))
+
+    # Return a list containing the filename
+  list(src = "outfile2.gif",contentType = 'image/gif')
+  
+},deleteFile = TRUE
+)
+```
+
+
+## References
+
+[^1]:Griffiths, A.J.F., Miller, J.H., Suzuki, D.T., et al. 
+(2000). *An Introduction to Genetic Analysis*. 7th edition.
+New York: W. H. Freeman. Chapter 2, Patterns of Inheritance. 
+Available from: https://www.ncbi.nlm.nih.gov/books/NBK22006/
+[^2]:Willis, J. (2020). Bio 202 Lecture 5: Variation and Inheritance at a
+Single Locus [PowerPoint slides]. 
+[^3]:Willis, J. (2020). Bio 202 Lecture 15: Natural Selection [PowerPoint slides]. 
